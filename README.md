@@ -165,5 +165,3 @@ User        → id, email, password_hash
 APIKey      → id, user_id, key_hash, tier, req_count, expires_at
 ScrapingLog → id, source, run_at, status, records_upserted, error
 ```
-
-test
