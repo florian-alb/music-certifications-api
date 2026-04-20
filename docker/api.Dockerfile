@@ -8,5 +8,5 @@ RUN go build -o server ./cmd/server
 FROM alpine:3.20
 WORKDIR /app
 COPY --from=builder /app/server .
-EXPOSE 8000
+EXPOSE 10000
 CMD ["./server"]
