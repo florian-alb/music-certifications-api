@@ -61,11 +61,11 @@ Les migrations appliquées sont trackées dans une table `schema_migrations` en 
 
 Variables d'environnement (fichier `api/.env`) :
 
-| Variable | Défaut |
-|---|---|
+| Variable       | Défaut                                                                   |
+| -------------- | ------------------------------------------------------------------------ |
 | `DATABASE_URL` | `postgres://postgres:postgres@localhost:5432/musiccerts?sslmode=disable` |
-| `REDIS_URL` | `redis://localhost:6379` |
-| `PORT` | `8000` |
+| `REDIS_URL`    | `redis://localhost:6379`                                                 |
+| `PORT`         | `8000`                                                                   |
 
 ## Endpoints
 
@@ -100,12 +100,12 @@ La réponse inclut `X-RateLimit-Remaining` pour suivre votre quota.
 
 ## Tiers & Rate Limiting
 
-| Tier | Limite | Prix |
-|---|---|---|
-| **Free** | 100 req/jour | 0 € |
-| **Starter** | 10 000 req/jour | ~9 €/mois |
-| **Pro** | 100 000 req/jour | ~29 €/mois |
-| **Enterprise** | Illimité + SLA | Sur devis |
+| Tier           | Limite           | Prix       |
+| -------------- | ---------------- | ---------- |
+| **Free**       | 100 req/jour     | 0 €        |
+| **Starter**    | 10 000 req/jour  | ~9 €/mois  |
+| **Pro**        | 100 000 req/jour | ~29 €/mois |
+| **Enterprise** | Illimité + SLA   | Sur devis  |
 
 Le compteur est un sliding window Redis par clé API, remis à zéro chaque jour à minuit.
 
@@ -165,3 +165,5 @@ User        → id, email, password_hash
 APIKey      → id, user_id, key_hash, tier, req_count, expires_at
 ScrapingLog → id, source, run_at, status, records_upserted, error
 ```
+
+test
