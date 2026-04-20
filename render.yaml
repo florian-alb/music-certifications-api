@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: music-certifications-api
+    runtime: docker
+    dockerfilePath: ./docker/api.Dockerfile
+    dockerContext: ./api
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: PORT
+        value: 10000
+    healthCheckPath: /health
