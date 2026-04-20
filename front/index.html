@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SNEP Certifications</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f0f0f;
+      color: #e8e8e8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      color: #666;
+      margin-top: 6px;
+      font-size: 0.9rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      color: #888;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      background: #161616;
+      border: 1px solid #222;
+      border-radius: 12px;
+      padding: 24px;
+      width: 100%;
+      max-width: 640px;
+      margin-bottom: 24px;
+    }
+
+    .card label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      flex: 1;
+      background: #0f0f0f;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      color: #e8e8e8;
+      font-size: 0.95rem;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #555;
+    }
+
+    button {
+      background: #e8e8e8;
+      color: #0f0f0f;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 10px 18px;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #666;
+      border: 1px solid #2a2a2a;
+      font-size: 0.8rem;
+      padding: 6px 12px;
+    }
+
+    .search-card .input-row {
+      gap: 8px;
+    }
+
+    #status {
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: 8px;
+      min-height: 18px;
+    }
+
+    #status.ok {
+      color: #4ade80;
+    }
+
+    #status.err {
+      color: #f87171;
+    }
+
+    #results {
+      width: 100%;
+      max-width: 640px;
+    }
+
+    .result-header {
+      font-size: 0.75rem;
+      color: #555;
+      margin-bottom: 12px;
+    }
+
+    .result-item {
+      background: #161616;
+      border: 1px solid #222;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .cert-badge {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cert-badge .icon {
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+
+    .level-diamond {
+      background: #1a2a3a;
+      color: #60a5fa;
+    }
+
+    .level-platine {
+      background: #1f1f2a;
+      color: #c4b5fd;
+    }
+
+    .level-or {
+      background: #2a2010;
+      color: #fbbf24;
+    }
+
+    .level-argent {
+      background: #1e2020;
+      color: #9ca3af;
+    }
+
+    .level-default {
+      background: #1a1a1a;
+      color: #666;
+    }
+
+    .result-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .result-title {
+      font-size: 1rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .result-artist {
+      font-size: 0.85rem;
+      color: #888;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .result-meta {
+      font-size: 0.75rem;
+      color: #555;
+      margin-top: 6px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .result-meta span {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #444;
+      padding: 48px 0;
+      font-size: 0.9rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #333;
+      border-top-color: #888;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    .api-key-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .api-key-display {
+      flex: 1;
+      background: #0f0f0f;
+      border: 1px solid #222;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      color: #555;
+      font-family: monospace;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: #555;
+      user-select: none;
+      margin-bottom: 12px;
+    }
+
+    details[open] summary {
+      color: #888;
+    }
+
+    .filters {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #1e1e1e;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .filter-group label {
+      margin-bottom: 5px;
+      font-size: 0.7rem;
+    }
+
+    select {
+      width: 100%;
+      background: #0f0f0f;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      color: #e8e8e8;
+      font-size: 0.85rem;
+      padding: 8px 10px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      transition: border-color 0.15s;
+    }
+
+    select:focus { border-color: #555; }
+
+    .filters-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: #555;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .filters-toggle:hover { color: #888; opacity: 1; }
+
+    .filters-toggle svg {
+      transition: transform 0.2s;
+    }
+
+    .filters-toggle.open svg {
+      transform: rotate(180deg);
+    }
+
+    #filtersPanel { display: none; }
+    #filtersPanel.open { display: grid; }
+
+    .active-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #1e2a1e;
+      border: 1px solid #2a3a2a;
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 0.75rem;
+      color: #6ee57a;
+      cursor: pointer;
+    }
+
+    .filter-chip:hover { background: #1a241a; }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <span class="badge">SNEP · France</span>
+    <h1>Certifications musicales</h1>
+    <p>Recherche par artiste ou titre d'album/single</p>
+  </header>
+
+  <!-- API Key setup -->
+  <div class="card" id="keyCard">
+    <details id="keyDetails">
+      <summary id="keySummary">🔑 Clé API — configurer</summary>
+      <div>
+        <label>Adresse e-mail</label>
+        <div class="input-row" style="margin-bottom:12px">
+          <input type="text" id="emailInput" placeholder="you@example.com" />
+        </div>
+        <label>Mot de passe</label>
+        <div class="input-row" style="margin-bottom:12px">
+          <input type="password" id="passwordInput" placeholder="••••••••" />
+        </div>
+        <div class="input-row">
+          <button onclick="login()">Connexion</button>
+          <button class="btn-secondary" onclick="register()">Créer un compte</button>
+          <button class="btn-secondary" onclick="clearKey()">Déconnecter</button>
+        </div>
+        <div id="authStatus"></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- Search -->
+  <div class="card search-card">
+    <label>Rechercher</label>
+    <div class="input-row">
+      <input type="text" id="searchInput" placeholder="Artiste, album ou single… (laisser vide pour parcourir)" autocomplete="off" />
+      <button id="searchBtn" onclick="search(1)">Chercher</button>
+    </div>
+
+    <button class="filters-toggle" id="filtersToggle" onclick="toggleFilters()">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 3h10M3 6h6M5 9h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Filtres avancés
+    </button>
+
+    <div id="filtersPanel" class="filters">
+      <div class="filter-group">
+        <label>Pays</label>
+        <select id="filterCountry">
+          <option value="">Tous les pays</option>
+          <option value="FR">🇫🇷 France</option>
+          <option value="BE">🇧🇪 Belgique</option>
+          <option value="CH">🇨🇭 Suisse</option>
+          <option value="LU">🇱🇺 Luxembourg</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Niveau <span style="color:#3a3a3a;font-weight:400">(sans texte)</span></label>
+        <select id="filterLevel">
+          <option value="">Tous les niveaux</option>
+          <option value="diamond">💎 Diamond</option>
+          <option value="platine">⬜ Platine</option>
+          <option value="or">🥇 Or</option>
+          <option value="argent">🥈 Argent</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Résultats / page</label>
+        <select id="filterPerPage">
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="activeFilters" class="active-filters"></div>
+    <div id="status"></div>
+  </div>
+
+  <!-- Results -->
+  <div id="results"></div>
+
+  <script>
+    const API = 'http://localhost:8000';
+    let currentPage = 1;
+
+    // ---- Key management ----
+    function getKey() { return localStorage.getItem('snep_api_key'); }
+    function setKey(k) { localStorage.setItem('snep_api_key', k); }
+    function clearKey() {
+      localStorage.removeItem('snep_api_key');
+      setAuthStatus('Déconnecté.', false);
+      updateKeySummary();
+    }
+
+    function updateKeySummary() {
+      const k = getKey();
+      const summary = document.getElementById('keySummary');
+      const details = document.getElementById('keyDetails');
+      if (k) {
+        summary.textContent = '🔑 Clé API — ' + k.slice(0, 8) + '••• (configurée)';
+        details.open = false;
+      } else {
+        summary.textContent = '🔑 Clé API — configurer';
+      }
+    }
+
+    function setAuthStatus(msg, ok) {
+      const el = document.getElementById('authStatus');
+      el.textContent = msg;
+      el.style.color = ok ? '#4ade80' : '#f87171';
+      el.style.marginTop = '10px';
+      el.style.fontSize = '0.82rem';
+    }
+
+    async function authRequest(path) {
+      const email = document.getElementById('emailInput').value.trim();
+      const pwd = document.getElementById('passwordInput').value;
+      if (!email || !pwd) { setAuthStatus('Email et mot de passe requis.', false); return; }
+      try {
+        const res = await fetch(API + path, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: pwd })
+        });
+        const data = await res.json();
+        if (!res.ok) { setAuthStatus(data.error || 'Erreur.', false); return; }
+        setKey(data.plain_key);
+        setAuthStatus('Connecté · clé enregistrée.', true);
+        updateKeySummary();
+      } catch (e) {
+        setAuthStatus("Impossible de joindre l'API.", false);
+      }
+    }
+
+    function login() { authRequest('/v1/auth/login'); }
+    function register() { authRequest('/v1/auth/register'); }
+
+    // ---- Filters panel ----
+    function toggleFilters() {
+      const panel = document.getElementById('filtersPanel');
+      const toggle = document.getElementById('filtersToggle');
+      const open = panel.classList.toggle('open');
+      toggle.classList.toggle('open', open);
+      toggle.querySelector('span') && (toggle.querySelector('span').textContent = open ? 'Masquer' : 'Filtres avancés');
+    }
+
+    function getFilters() {
+      return {
+        country: document.getElementById('filterCountry').value,
+        level: document.getElementById('filterLevel').value,
+        perPage: parseInt(document.getElementById('filterPerPage').value, 10) || 20,
+      };
+    }
+
+    function renderActiveFilters() {
+      const { country, level } = getFilters();
+      const q = document.getElementById('searchInput').value.trim();
+      const chips = [];
+      if (country) chips.push({ label: `Pays : ${country}`, clear: () => { document.getElementById('filterCountry').value = ''; search(1); } });
+      if (level)   chips.push({ label: `Niveau : ${level}`,  clear: () => { document.getElementById('filterLevel').value = '';   search(1); } });
+      if (q)       chips.push({ label: `"${q}"`,             clear: () => { document.getElementById('searchInput').value = '';   search(1); } });
+
+      const container = document.getElementById('activeFilters');
+      container.innerHTML = chips.map((c, i) =>
+        `<span class="filter-chip" onclick="chips_${i}()">✕ ${esc(c.label)}</span>`
+      ).join('');
+      chips.forEach((c, i) => { window[`chips_${i}`] = c.clear; });
+    }
+
+    // ---- Search / browse ----
+    function certStyle(level) {
+      if (!level) return { cls: 'level-default', icon: '🎵' };
+      const l = level.toLowerCase();
+      if (l.includes('diamond') || l.includes('diamant')) return { cls: 'level-diamond', icon: '💎' };
+      if (l.includes('plat'))  return { cls: 'level-platine', icon: '⬜' };
+      if (l.includes('or') || l.includes('gold'))   return { cls: 'level-or',     icon: '🥇' };
+      if (l.includes('arg') || l.includes('silver')) return { cls: 'level-argent', icon: '🥈' };
+      return { cls: 'level-default', icon: '🎵' };
+    }
+
+    function formatSales(n) {
+      if (!n) return null;
+      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+      if (n >= 1_000) return Math.round(n / 1_000) + 'k';
+      return n.toString();
+    }
+
+    function renderResults(data, meta, page) {
+      const container = document.getElementById('results');
+      if (!data.length) {
+        container.innerHTML = '<p class="empty">Aucune certification trouvée.</p>';
+        return;
+      }
+
+      const total  = meta?.total ?? data.length;
+      const pp     = meta?.per_page ?? data.length;
+      const pages  = Math.ceil(total / pp);
+
+      let html = `<p class="result-header">${total} résultat${total > 1 ? 's' : ''}</p>`;
+
+      for (const c of data) {
+        const { cls, icon } = certStyle(c.level);
+        const sales = formatSales(c.sales_equivalent);
+        const date  = c.certified_at ? new Date(c.certified_at).getFullYear() : null;
+
+        html += `
+        <div class="result-item">
+          <div class="cert-badge ${cls}">
+            <span class="icon">${icon}</span>
+            <span>${esc(c.level ?? '?')}</span>
+          </div>
+          <div class="result-info">
+            <div class="result-title">${esc(c.release?.title ?? '—')}</div>
+            <div class="result-artist">${esc(c.artist?.name ?? '—')}</div>
+            <div class="result-meta">
+              ${c.release?.type ? `<span>📀 ${esc(c.release.type)}</span>` : ''}
+              ${c.country       ? `<span>🌍 ${esc(c.country)}</span>` : ''}
+              ${date            ? `<span>📅 ${date}</span>` : ''}
+              ${sales           ? `<span>📊 ${sales}</span>` : ''}
+              ${c.source        ? `<span>🏛 ${esc(c.source)}</span>` : ''}
+            </div>
+          </div>
+        </div>`;
+      }
+
+      if (pages > 1) {
+        html += `<div class="pagination">
+          <button class="btn-secondary" onclick="search(${page - 1})" ${page <= 1 ? 'disabled' : ''}>← Précédent</button>
+          <span>Page ${page} / ${pages}</span>
+          <button class="btn-secondary" onclick="search(${page + 1})" ${page >= pages ? 'disabled' : ''}>Suivant →</button>
+        </div>`;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function setStatus(msg, type) {
+      const el = document.getElementById('status');
+      el.className = type ?? '';
+      el.innerHTML = msg;
+    }
+
+    async function search(page) {
+      currentPage = page;
+      const q       = document.getElementById('searchInput').value.trim();
+      const { country, level, perPage } = getFilters();
+
+      const key = getKey();
+      if (!key) {
+        setStatus('Configurez votre clé API ci-dessus.', 'err');
+        document.getElementById('keyDetails').open = true;
+        return;
+      }
+
+      renderActiveFilters();
+      document.getElementById('searchBtn').disabled = true;
+      setStatus('<span class="spinner"></span>Recherche en cours…');
+      document.getElementById('results').innerHTML = '';
+
+      try {
+        let url;
+        if (q) {
+          // Text search — supports country filter
+          const p = new URLSearchParams({ q, page, per_page: perPage });
+          if (country) p.set('country', country);
+          url = `${API}/v1/search?${p}`;
+        } else {
+          // Browse all — supports country + level filters
+          const p = new URLSearchParams({ page, per_page: perPage });
+          if (country) p.set('country', country);
+          if (level)   p.set('level', level);
+          url = `${API}/v1/certifications?${p}`;
+        }
+
+        const res  = await fetch(url, { headers: { 'X-API-Key': key } });
+        const body = await res.json();
+
+        if (!res.ok) { setStatus(body.error ?? 'Erreur serveur.', 'err'); return; }
+
+        setStatus('');
+        renderResults(body.data ?? [], body.meta, page);
+      } catch (e) {
+        setStatus("Impossible de joindre l'API (localhost:8000).", 'err');
+      } finally {
+        document.getElementById('searchBtn').disabled = false;
+      }
+    }
+
+    function esc(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    document.getElementById('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') search(1); });
+    document.getElementById('passwordInput').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+    ['filterCountry', 'filterLevel', 'filterPerPage'].forEach(id => {
+      document.getElementById(id).addEventListener('change', () => search(1));
+    });
+
+    updateKeySummary();
+  </script>
+</body>
+
+</html>
